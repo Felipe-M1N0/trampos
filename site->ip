@@ -8,8 +8,8 @@ if escolha == "1":
     print(f"O IP do site {site} é: {ip}")
 
 elif escolha == "2":
-    nome_arquivo = input("Digite o nome do arquivo: ")
-    with open(nome_arquivo, "r") as arquivo:
+     caminho_arquivo = input("Digite o caminho para o arquivo: ")
+    with open(caminho_arquivo, "r") as arquivo:
         sites = arquivo.readlines()
 
     for site in sites:
