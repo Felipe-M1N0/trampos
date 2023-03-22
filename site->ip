@@ -1,27 +1,36 @@
+import argparse
 import socket
 
-escolha = input("Digite '1' para inserir um site ou '2' para ler um arquivo: ")
+parser = argparse.ArgumentParser(description="Obter o IP de um site ou lista de sites")
+parser.add_argument("-u", "--url", help="URL do site a ser pesquisado")
+parser.add_argument("-l", "--lista", help="Caminho do arquivo com a lista de sites a serem pesquisados")
+parser.add_argument("-o", "--output", help="Caminho do arquivo para salvar a saída")
+args = parser.parse_args()
 
-if escolha == "1":
-    site = input("Digite o nome do site: ")
+def get_ip(site):
     try:
         ip = socket.gethostbyname(site)
         print(f"O IP do site {site} é: {ip}")
+        return ip
     except socket.gaierror:
         print(f"Erro: não foi possível obter o IP do site {site}")
+        return None
 
-elif escolha == "2":
-    caminho_arquivo = input("Digite o caminho absoluto para o arquivo: ")
-    with open(caminho_arquivo, "r") as arquivo:
+if args.url:
+    get_ip(args.url)
+    if args.output:
+        with open(args.output, "w") as arquivo_saida:
+            arquivo_saida.write(args.url + " " + get_ip(args.url) + "\n")
+
+elif args.lista:
+    with open(args.lista, "r") as arquivo:
         sites = arquivo.readlines()
-
     for site in sites:
         site = site.strip()  # Remove espaços em branco no início e no final da linha
-        try:
-            ip = socket.gethostbyname(site)
-            print(f"O IP do site {site} é: {ip}")
-        except socket.gaierror:
-            print(f"Erro: não foi possível obter o IP do site {site}")
+        get_ip(site)
+        if args.output:
+            with open(args.output, "a") as arquivo_saida:
+                arquivo_saida.write(site + " " + str(get_ip(site)) + "\n")
 
 else:
-    print("Escolha inválida. Digite '1' ou '2'.")
+    print("Erro: forneça pelo menos um argumento (-u ou -l).")
